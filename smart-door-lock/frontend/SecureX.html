@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Door Lock System - OS</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    /* Futuristic Date Picker styling */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.8) sepia(1) saturate(5) hue-rotate(135deg) drop-shadow(0 0 5px rgba(0,243,255,0.8));
+      cursor: pointer;
+    }
+    :root {
+      --neon-cyan: #00f3ff;
+      --neon-blue: #0066ff;
+      --neon-purple: #bc13fe;
+      --dark-bg: #050508;
+    }
+
+    * { font-family: 'Outfit', sans-serif; }
+    
+    body {
+      background-color: var(--dark-bg);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 243, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(188, 19, 254, 0.08) 0%, transparent 50%);
+      overflow-x: hidden;
+    }
+
+    /* 3D Animated Cyber Grid */
+    .cyber-grid {
+      position: fixed;
+      width: 200vw;
+      height: 200vh;
+      top: -50%;
+      left: -50%;
+      background-image: 
+        linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: perspective(600px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+      animation: gridMove 20s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes gridMove {
+      0% { transform: perspective(600px) rotateX(60deg) translateY(0) translateZ(-200px); }
+      100% { transform: perspective(600px) rotateX(60deg) translateY(40px) translateZ(-200px); }
+    }
+
+    /* Holographic Glass Card */
+    .glass-card {
+      background: linear-gradient(135deg, rgba(10, 15, 30, 0.8), rgba(5, 8, 15, 0.9));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 243, 255, 0.15);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8),
+                  inset 0 0 20px rgba(0, 243, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    /* Futuristic Corner Brackets (ONLY on Login Screen) */
+    #login-screen .glass-card::before, 
+    #login-screen .glass-card::after {
+      content: ''; 
+      position: absolute; 
+      width: 30px; 
+      height: 30px; 
+      border-color: var(--neon-cyan); 
+      border-style: solid; 
+      z-index: 10;
+      pointer-events: none;
+      filter: drop-shadow(0 0 8px var(--neon-cyan)); 
+    }
+
+    #login-screen .glass-card::before { 
+      top: 16px; 
+      left: 16px; 
+      border-width: 2px 0 0 2px; 
+    }
+
+    #login-screen .glass-card::after { 
+      bottom: 16px; 
+      right: 16px; 
+      border-width: 0 2px 2px 0; 
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Glowing Input Fields */
+    .input-field {
+      background: rgba(0, 10, 20, 0.5);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      color: var(--neon-cyan);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .input-field:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1);
+      outline: none;
+      transform: scale(1.02);
+    }
+
+    /* Cyber Buttons */
+    .btn-primary {
+      background: linear-gradient(90deg, #00f3ff 0%, #0066ff 100%);
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      z-index: 1;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: all 0.4s ease;
+      z-index: -1;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    .btn-primary:hover::before { left: 100%; transition: 0.6s; }
+
+    /* Face Scanner Frame */
+    .face-capture-frame {
+      position: relative;
+      border: 2px solid rgba(0, 243, 255, 0.3);
+      box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.1);
+    }
+
+    .scanner-laser {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+      top: 0;
+      left: 0;
+      animation: scan 2.5s ease-in-out infinite alternate;
+      z-index: 20;
+    }
+
+    @keyframes scan {
+      0% { top: 5%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 95%; opacity: 0; }
+    }
+
+    .target-box {
+      position: absolute; inset: 20px;
+      border: 1px dashed rgba(0, 243, 255, 0.5);
+      border-radius: 50%;
+      animation: pulseTarget 2s infinite;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes pulseTarget {
+      0% { transform: scale(0.95); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.5; }
+    }
+
+    /* Digital LED Display */
+    .led-display {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-blue);
+      background: rgba(0, 10, 20, 0.8);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+    }
+
+    /* Custom Scrollbar */
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0, 243, 255, 0.05); }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; box-shadow: 0 0 10px var(--neon-cyan); }
+
+    /* Utilities */
+    .fade-in { animation: futuristicFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    @keyframes futuristicFade {
+      from { opacity: 0; transform: translateY(30px) scale(0.95) rotateX(10deg); filter: blur(10px); }
+      to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); filter: blur(0); }
+    }
+    
+    .text-glow { text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+  </style>
+ </head>
+ <body class="h-full text-white overflow-auto relative">
+  
+  <div class="cyber-grid"></div>
+
+  <div id="app" class="min-h-full w-full relative z-10">
+   <div id="login-screen" class="relative min-h-full flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+     <div class="text-center mb-8 fade-in">
+      <div class="inline-flex items-center justify-center w-24 h-24 rounded-full p-1 mb-4 relative" style="background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);">
+       <div class="w-full h-full rounded-full bg-slate-950 flex items-center justify-center relative z-10">
+        <svg class="w-12 h-12 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+       </div>
+      </div>
+      <h1 id="system-title" class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 tracking-wider text-glow">SecureX</h1>
+      <p class="text-cyan-500/70 mt-2 font-mono text-sm tracking-widest">// SMART_DOOR_LOCK_SYSTEM //</p>
+     </div>
+     <div class="glass-card rounded-3xl p-8 fade-in" style="animation-delay: 0.1s;">
+      <h2 class="text-xl font-bold mb-6 text-center tracking-widest text-white/90">SECUREX_ADMIN_LOGIN</h2>
+      <div class="space-y-5 mb-8">
+       <div>
+        <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase" for="admin-username">Identification</label>
+        <input type="text" id="admin-username" class="input-field w-full px-4 py-3 rounded-xl" placeholder="Enter ID" value="admin">
+       </div>
+       <div>
+        <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase" for="admin-password">Passkey</label>
+        <input type="password" id="admin-password" class="input-field w-full px-4 py-3 rounded-xl" placeholder="••••••••" value="admin123">
+       </div>
+      </div>
+      <button onclick="handleAdminLogin()" class="btn-primary w-full py-4 rounded-xl font-bold text-sm tracking-widest"> INITIATE LOGIN SEQUENCE </button>
+      <p id="admin-error" class="hidden text-red-500 font-mono text-sm mt-4 text-center text-shadow-red"></p>
+     </div>
+    </div>
+   </div>
+
+   <div id="otp-page" class="hidden relative min-h-full flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+     <header class="glass-card px-4 py-4 sticky top-0 z-50 mb-8 rounded-2xl flex items-center justify-between fade-in">
+       <div>
+        <h1 class="font-bold text-lg text-cyan-400">ACCESS CONTROL</h1>
+        <p class="text-xs font-mono text-slate-400">ROOT_PRIVILEGE_ACTIVE</p>
+       </div>
+       <button onclick="logout()" class="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all border border-red-500/20 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+       </button>
+     </header>
+
+     <div class="glass-card rounded-3xl p-8 fade-in space-y-6">
+      <h2 class="text-xl font-bold text-center tracking-widest">TEMPORARY KEY</h2>
+      
+      <div class="led-display rounded-2xl p-8 text-center relative overflow-hidden group">
+       <div class="absolute inset-0 bg-cyan-500/5 group-hover:bg-cyan-500/10 transition-colors"></div>
+       <p class="text-slate-400/50 text-xs mb-2">STATUS: AWAITING_GENERATION</p>
+       <p id="generated-otp" style="font-size: 3.5rem; letter-spacing: 12px;" class="font-bold">------</p>
+      </div>
+
+      <button onclick="generateOTP()" class="btn-primary w-full py-4 rounded-xl font-bold text-sm tracking-widest" style="background: linear-gradient(90deg, #bc13fe, #0066ff);"> 
+        GENERATE SECURE OTP 
+      </button>
+
+      <div class="flex items-center my-6">
+       <div class="flex-1 border-t border-cyan-500/20"></div>
+       <span class="px-4 text-xs font-mono text-cyan-500/50">OR</span>
+       <div class="flex-1 border-t border-cyan-500/20"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <button onclick="goToRegisterPage()" class="input-field py-4 rounded-xl font-semibold text-cyan-400 text-sm hover:bg-cyan-500/10 hover:shadow-[0_0_20px_rgba(0,243,255,0.2)] flex flex-col items-center justify-center gap-2"> 
+          <span class="text-2xl">👤+</span> Add Entity
+        </button>
+        <button onclick="goToDashboard()" class="input-field py-4 rounded-xl font-semibold text-cyan-400 text-sm hover:bg-cyan-500/10 hover:shadow-[0_0_20px_rgba(0,243,255,0.2)] flex flex-col items-center justify-center gap-2"> 
+          <span class="text-2xl">📊</span> System DB
+        </button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <div id="register-page" class="hidden relative min-h-full flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+     <header class="glass-card px-4 py-4 sticky top-0 z-50 mb-8 rounded-2xl flex items-center relative fade-in">
+       <button onclick="backToOTPPage()" class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all border border-cyan-500/20 relative z-10">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+       </button>
+       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <h1 class="font-bold text-lg text-cyan-400 tracking-widest">ENTITY REGISTRATION</h1>
+       </div>
+     </header>
+
+     <div class="glass-card rounded-3xl p-8 fade-in max-h-[80vh] overflow-y-auto scrollbar-thin">
+      <div class="flex gap-4 mb-8">
+       <button onclick="selectMemberType('guest')" class="flex-1 input-field p-4 rounded-2xl text-center member-type-btn" id="guest-btn">
+        <p class="text-2xl mb-1">👥</p>
+        <p class="font-semibold text-sm">Guest</p>
+       </button>
+       <button onclick="selectMemberType('member')" class="flex-1 input-field p-4 rounded-2xl text-center member-type-btn" id="member-btn">
+        <p class="text-2xl mb-1">👑</p>
+        <p class="font-semibold text-sm">Resident</p>
+       </button>
+      </div>
+
+      <div id="register-form" class="hidden space-y-5">
+       <div>
+        <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase" for="reg-name">Entity Name</label>
+        <input type="text" id="reg-name" class="input-field w-full px-4 py-3 rounded-xl" placeholder="Full Name">
+       </div>
+       <div>
+        <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase">Mobile Number (10 Digits)</label>
+        <div class="flex gap-2">
+         <select id="country-code" class="input-field px-2 py-3 rounded-xl text-center font-mono w-[100px] text-cyan-300 cursor-pointer" style="color-scheme: dark;">
+          <option value="+91" selected>+91(IN)</option>
+          <option value="+1">+1(US)</option>
+          <option value="+44">+44(UK)</option>
+          <option value="+61">+61(AU)</option>
+          <option value="+971">+971(AE)</option>
+         </select>
+         <input type="tel" id="reg-phone" class="input-field flex-1 px-4 py-3 rounded-xl font-mono text-cyan-300 tracking-widest" placeholder="0000000000" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+       </div>
+       
+       <div id="guest-dates" class="hidden grid grid-cols-2 gap-4">
+        <div>
+         <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase">Valid From</label>
+         <input type="date" id="start-date" class="input-field w-full px-4 py-3 rounded-xl text-sm font-mono text-cyan-300" style="color-scheme: dark;">
+        </div>
+        <div>
+         <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase">Valid Until</label>
+         <input type="date" id="end-date" class="input-field w-full px-4 py-3 rounded-xl text-sm font-mono text-cyan-300" style="color-scheme: dark;">
+        </div>
+       </div>
+
+       <div>
+        <label class="block text-xs font-mono text-cyan-400/70 mb-2 uppercase">Biometric Scan</label>
+        <div class="face-capture-frame rounded-xl" id="face-frame">
+          <div class="target-box"></div>
+          <div class="scanner-laser" id="scanner-laser"></div>
+          <video id="camera" autoplay playsinline class="w-full aspect-square object-cover rounded-xl filter contrast-125 saturate-50"></video>
+          <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+        <button type="button" onclick="captureFace()" class="btn-primary w-full py-3 rounded-xl font-bold text-sm tracking-widest mt-4"> 📸 CAPTURE BIOMETRICS </button>
+       </div>
+       
+       <button onclick="registerMember()" class="w-full py-4 rounded-xl font-bold text-sm tracking-widest text-black bg-cyan-400 hover:bg-cyan-300 hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] transition-all mt-4"> COMMIT TO DATABASE </button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <div id="dashboard" class="hidden relative min-h-full flex items-center justify-center p-4">
+     <div class="w-full max-w-4xl">
+      <header class="glass-card border-b border-cyan-500/20 px-6 py-4 sticky top-0 z-50 mb-6 rounded-2xl flex items-center justify-between fade-in">
+       <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(0,243,255,0.4)]">
+         <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+        </div>
+        <div>
+         <h1 class="font-bold text-xl text-cyan-400 tracking-wider">SYSTEM DATABASE</h1>
+         <p class="text-xs font-mono text-cyan-500/50">Node: Localhost // Status: Online</p>
+        </div>
+       </div>
+       <button onclick="goToHome()" class="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all border border-cyan-500/20">
+        <span class="text-xl">🏠</span>
+       </button>
+      </header>
+
+      <nav class="glass-card mb-6 p-2 rounded-2xl fade-in flex">
+       <button onclick="switchTab('gallery')" class="flex-1 py-3 rounded-xl text-sm font-bold tracking-widest uppercase transition-all nav-tab active text-cyan-400" data-tab="gallery"> Visuals </button>
+       <button onclick="switchTab('members')" class="flex-1 py-3 rounded-xl text-sm font-bold tracking-widest uppercase transition-all nav-tab text-slate-400 hover:text-cyan-400" data-tab="members"> Entities </button>
+      </nav>
+
+      <main class="fade-in">
+       <div id="tab-gallery" class="tab-content">
+        <div class="glass-card rounded-3xl p-6">
+         <div class="flex items-center justify-between mb-6 border-b border-cyan-500/20 pb-4">
+          <h2 class="text-lg font-bold text-cyan-400 font-mono">BIOMETRIC_RECORDS</h2>
+          <span class="px-3 py-1 bg-cyan-500/20 rounded-full text-xs font-mono text-cyan-400 border border-cyan-500/30" id="photo-count">0 ENTRIES</span>
+         </div>
+         <div id="gallery-grid" class="photo-grid">
+          </div>
+        </div>
+       </div>
+
+       <div id="tab-members" class="tab-content hidden">
+        <div class="glass-card rounded-3xl p-6">
+         <h2 class="text-lg font-bold text-cyan-400 font-mono border-b border-cyan-500/20 pb-4 mb-6">AUTHORIZED_ENTITIES</h2>
+         <div id="members-list" class="space-y-4 max-h-[50vh] overflow-y-auto scrollbar-thin pr-2">
+          </div>
+        </div>
+       </div>
+      </main>
+     </div>
+   </div>
+
+   <div id="photo-modal" class="hidden modal-overlay" onclick="closePhotoModal(event)">
+    <div class="glass-card rounded-3xl p-6 max-w-sm w-full transform transition-all border border-cyan-400" onclick="event.stopPropagation()">
+     <div class="flex items-center justify-between mb-4 border-b border-cyan-500/30 pb-3">
+      <h2 class="text-lg font-bold font-mono text-cyan-400">ENTITY_DETAILS</h2>
+      <button onclick="closePhotoModal()" class="text-cyan-400/50 hover:text-red-400">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+     </div>
+     <div class="relative rounded-xl overflow-hidden mb-4 border border-cyan-500/30">
+        <div class="absolute inset-0 bg-cyan-500/10 mix-blend-overlay pointer-events-none"></div>
+        <div class="scanner-laser" style="animation-duration: 4s;"></div>
+        <img id="modal-face-image" class="w-full filter contrast-125 saturate-50">
+     </div>
+     <div class="font-mono text-sm space-y-2 bg-black/50 p-4 rounded-xl border border-cyan-500/10">
+      <p><span class="text-cyan-500/50">ID_NAME:</span> <span id="modal-name" class="text-cyan-300"></span></p>
+      <p><span class="text-cyan-500/50">COM_LINK:</span> <span id="modal-phone" class="text-cyan-300"></span></p>
+      <p><span class="text-cyan-500/50">CLASS:</span> <span id="modal-type" class="text-cyan-300 uppercase"></span></p>
+     </div>
+    </div>
+   </div>
+
+   <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div class="bg-black/80 backdrop-blur-md border border-cyan-400 rounded-xl px-6 py-4 flex items-center gap-3 shadow-[0_0_20px_rgba(0,243,255,0.3)]">
+     <span id="toast-icon" class="text-2xl drop-shadow-[0_0_5px_currentColor]">✅</span>
+     <p id="toast-message" class="text-sm font-bold font-mono text-cyan-400 tracking-wide">Success</p>
+    </div>
+   </div>
+  </div>
+
+  <button onclick="resetData()">Reset</button>
+
+  <script>
+  function resetData() {
+      localStorage.removeItem("members");
+      alert("Data reset successful");
+      location.reload();
+  }
+  </script>
+
+  <script>
+    let isAdmin = false;
+    let selectedMemberType = '';
+    let capturedFaceData = '';
+    let registeredMembers = [];
+    
+    // Existing initialization
+    async function init() {
+      const savedMembers = localStorage.getItem("members");
+      if(savedMembers){ registeredMembers = JSON.parse(savedMembers); }
+      renderMembers();
+      renderGallery();
+    }
+    
+    // Camera Logic
+    async function startCamera(){
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById("camera").srcObject = stream;
+        document.getElementById("scanner-laser").style.display = "block";
+      }catch(err){
+        console.log("Camera error:",err);
+        showToast("⚠️", "Camera permission denied");
+      }
+    }
+
+    // Navigation Logic
+    function handleAdminLogin() {
+      const u = document.getElementById('admin-username').value;
+      const p = document.getElementById('admin-password').value;
+      if (u === 'admin' && p === 'admin123') {
+        isAdmin = true;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('otp-page').classList.remove('hidden');
+        showToast('🔓', 'ACCESS GRANTED');
+      } else {
+        const err = document.getElementById('admin-error');
+        err.textContent = 'ACCESS DENIED';
+        err.classList.remove('hidden');
+      }
+    }
+
+    function goToHome() {
+      if (!isAdmin) {
+        document.querySelectorAll('> div[id]').forEach(d => d.classList.add('hidden'));
+        document.getElementById('login-screen').classList.remove('hidden');
+      } else {
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('register-page').classList.add('hidden');
+        document.getElementById('otp-page').classList.remove('hidden');
+      }
+    }
+
+    function goToDashboard() {
+      document.getElementById('otp-page').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+    }
+
+    function logout() {
+      isAdmin = false;
+      document.getElementById('otp-page').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      showToast('🔒', 'SYSTEM SECURED');
+    }
+
+    function goToRegisterPage() {
+      document.getElementById('otp-page').classList.add('hidden');
+      document.getElementById('register-page').classList.remove('hidden');
+      setTimeout(startCamera, 300);
+      clearRegisterForm();
+    }
+
+    function backToOTPPage() {
+      const video = document.getElementById("camera");
+      if(video.srcObject) { video.srcObject.getTracks().forEach(track => track.stop()); }
+      document.getElementById('register-page').classList.add('hidden');
+      document.getElementById('otp-page').classList.remove('hidden');
+    }
+
+    // Action Logic
+    function generateOTP() {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById('generated-otp').textContent = otp;
+      document.getElementById('generated-otp').classList.add('text-shadow-[0_0_20px_#bc13fe]');
+      setTimeout(() => document.getElementById('generated-otp').classList.remove('text-shadow-[0_0_20px_#bc13fe]'), 500);
+    }
+    
+    function selectMemberType(type) {
+      selectedMemberType = type;
+      document.querySelectorAll('.member-type-btn').forEach(b => {
+        b.style.borderColor = 'rgba(0, 243, 255, 0.2)';
+        b.style.background = 'rgba(0, 10, 20, 0.5)';
+      });
+      const selected = document.getElementById(`${type}-btn`);
+      selected.style.borderColor = 'var(--neon-cyan)';
+      selected.style.background = 'rgba(0, 243, 255, 0.1)';
+      document.getElementById('register-form').classList.remove('hidden');
+      document.getElementById('guest-dates').classList.toggle('hidden', type !== 'guest');
+    }
+
+    function captureFace(){
+      const video = document.getElementById("camera");
+      const canvas = document.getElementById("canvas");
+      if(video.videoWidth === 0){ showToast("⚠️", "Camera initializing..."); return; }
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+      capturedFaceData = canvas.toDataURL("image/jpeg");
+      
+      document.getElementById("scanner-laser").style.display = "none";
+      video.pause();
+      showToast("🧬", "BIOMETRICS ACQUIRED");
+    }
+    
+    function registerMember(){
+      const name = document.getElementById("reg-name").value;
+      const phoneInput = document.getElementById("reg-phone").value;
+      const countryCode = document.getElementById("country-code").value;
+      
+      // Check for missing data
+      if(!name || !phoneInput || !capturedFaceData){ 
+        showToast("⚠️", "MISSING PARAMETERS"); 
+        return; 
+      }
+
+      // Strict 10-digit validation
+      if(phoneInput.length !== 10){
+        showToast("❌", "INVALID PHONE NUMBER (10 DIGITS REQ)");
+        // Add a red glow to the input to highlight the error
+        document.getElementById("reg-phone").style.borderColor = "red";
+        document.getElementById("reg-phone").style.boxShadow = "0 0 15px rgba(255,0,0,0.5)";
+        setTimeout(() => {
+          document.getElementById("reg-phone").style.borderColor = "var(--neon-cyan)";
+          document.getElementById("reg-phone").style.boxShadow = "none";
+        }, 2000);
+        return;
+      }
+
+      // Combine country code and phone number
+      const fullPhone = `${countryCode} ${phoneInput}`;
+      
+      registeredMembers.push({ 
+        member_name: name, 
+        member_phone: fullPhone, 
+        member_type: selectedMemberType, 
+        face_data: capturedFaceData 
+      });
+      
+      localStorage.setItem("members", JSON.stringify(registeredMembers));
+      
+      renderMembers(); 
+      renderGallery();
+      showToast("💾", "DATA COMMITTED");
+      backToOTPPage();
+    }
+    
+    function clearRegisterForm() {
+      document.getElementById('reg-name').value = '';
+      document.getElementById('reg-phone').value = '';
+      capturedFaceData = '';
+      document.getElementById("register-form").classList.add('hidden');
+      document.querySelectorAll('.member-type-btn').forEach(b => {
+        b.style.borderColor = 'rgba(0, 243, 255, 0.2)';
+        b.style.background = 'rgba(0, 10, 20, 0.5)';
+      });
+      const video = document.getElementById("camera");
+      if(video) video.play();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      document.querySelectorAll('.nav-tab').forEach(n => {
+        n.classList.remove('text-cyan-400', 'bg-cyan-500/10');
+        n.classList.add('text-slate-400');
+      });
+      const activeTab = document.querySelector(`[data-tab="${tab}"]`);
+      activeTab.classList.remove('text-slate-400');
+      activeTab.classList.add('text-cyan-400', 'bg-cyan-500/10');
+    }
+
+    // Render Logic
+    function renderGallery(){
+      const container = document.getElementById("gallery-grid");
+      if(registeredMembers.length === 0){
+        container.innerHTML = `<div class="text-center py-12 col-span-full font-mono text-cyan-500/50">NO DATA FOUND</div>`;
+        return;
+      }
+      container.innerHTML = registeredMembers.map(m => `
+        <div class="photo-item border border-cyan-500/30 hover:border-cyan-400 transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group"
+          onclick="openPhotoModal('${m.member_name}','${m.member_phone}','${m.member_type}','${m.face_data}')">
+          <div class="absolute inset-0 bg-cyan-500/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+          <img src="${m.face_data}" class="w-full h-full object-cover filter contrast-125 saturate-50"/>
+        </div>
+      `).join("");
+      document.getElementById("photo-count").textContent = registeredMembers.length + " ENTRIES";
+    }
+
+    function renderMembers() {
+      const container = document.getElementById('members-list');
+      if(registeredMembers.length === 0){
+        container.innerHTML = `<div class="text-center py-12 font-mono text-cyan-500/50">NO DATA FOUND</div>`;
+        return;
+      }
+      container.innerHTML = registeredMembers.map(m => `
+        <div class="flex items-center gap-4 p-4 rounded-xl border border-cyan-500/10 bg-black/40 hover:border-cyan-500/40 transition-colors">
+          <div class="w-12 h-12 rounded-lg border border-cyan-500/30 overflow-hidden relative">
+            <div class="absolute inset-0 bg-cyan-500/20 mix-blend-overlay"></div>
+            <img src="${m.face_data}" class="w-full h-full object-cover filter contrast-125 saturate-50"/>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-white tracking-wide">${m.member_name}</p>
+            <p class="text-xs font-mono text-cyan-500/70">${m.member_phone}</p>
+          </div>
+          <div class="text-right">
+            <span class="px-3 py-1 bg-cyan-900/40 text-cyan-400 text-xs font-mono rounded-full border border-cyan-500/30 uppercase">${m.member_type}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openPhotoModal(name, phone, type, faceData) {
+      document.getElementById('modal-name').textContent = name;
+      document.getElementById('modal-phone').textContent = phone;
+      document.getElementById('modal-type').textContent = type;
+      document.getElementById('modal-face-image').src = faceData;
+      document.getElementById('photo-modal').classList.remove('hidden');
+    }
+
+    function closePhotoModal() { document.getElementById('photo-modal').classList.add('hidden'); }
+
+    function showToast(icon, message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-icon').textContent = icon;
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+    }
+    
+    init();
+  </script>
+ </body>
+</html>
