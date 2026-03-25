@@ -1,3 +1,9 @@
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running...");
+});
+
 const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
