@@ -66,6 +66,12 @@ app.get("/generate-otp", (req, res) => {
 
 });
 
+catch (err) {
+  console.log(err);
+  res.status(500).send(err.message);  // 👈 ADD THIS LINE
+}
+
+
 /* ---------- Start Server ---------- */
 
 app.listen(3000, () => {
